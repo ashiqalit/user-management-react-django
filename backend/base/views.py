@@ -27,22 +27,12 @@ def getRoutes(request):
 
 class SignupView(APIView):
     def post(self, request):
-        serializer = UserSerializer(data=request.data)
+        data = request.data
+        serializer = UserSerializer(data=data)
         if serializer.is_valid():
             user = serializer.save()
             UserProfile.objects.create(user=user)
-
-            token_obtain_pair_view = TokenObtainPairView.as_view()
-            token_response = token_obtain_pair_view(request._request)
-
-            return Response(
-                {
-                    "user": UserSerializer(user).data,
-                    "token": token_response.data["access"],
-                    "refresh_token": token_response.data["refresh"],
-                },
-                status=status.HTTP_201_CREATED,
-            )
+            return Response(status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -59,8 +49,7 @@ class LoginView(APIView):
                         {"error": "Your account is blocked"},
                         status=status.HTTP_403_FORBIDDEN,
                     )
-                token_obtain_pair_view = TokenObtainPairView.as_view()
-                token_response = token_obtain_pair_view(request._request)
+                token_response = RefreshToken.for_user(user)
                 return Response(
                     {
                         "user": {
@@ -70,8 +59,8 @@ class LoginView(APIView):
                             "username": user.username,
                             "email": user.email,
                         },
-                        "token": token_response.data["access"],
-                        "refresh_token": token_response.data["refresh"],
+                        "access_token": str(token_response.access_token ),
+                        "refresh_token": str(token_response),
                     }
                 )
             else:
@@ -161,6 +150,9 @@ class UserProfileView(APIView):
         profile = UserProfile.objects.get(user=request.user)
         return Response(
             {
+                "first_name": request.user.first_name,
+                "last_name": request.user.last_name,
+                "email": request.user.email,
                 "username": request.user.username,
                 "profile_picture": (
                     request.build_absolute_uri(profile.profile_picture.url)
@@ -169,18 +161,19 @@ class UserProfileView(APIView):
                 ),
             }
         )
-    
+
     def put(self, request):
         profile = UserProfile.objects.get(user=request.user)
-        if 'username' in request.data:
-            request.user.username = request.data['username']
+        if "username" in request.data:
+            request.user.username = request.data["username"]
             request.user.save()
-        if 'profile_picture' in  request.FILES:
-            profile.profile_picture = request.FILES['profile_picture']
+        if "profile_picture" in request.FILES:
+            profile.profile_picture = request.FILES["profile_picture"]
             profile.save()
-        return Response({'message':'Profile updated successfully'})
+        return Response({"message": "Profile updated successfully"})
 
-@api_view(['POST'])
+
+@api_view(["POST"])
 @permission_classes([IsAdminUser])
 def admin_create_user(request):
     serializer = UserSerializer(data=request.data)

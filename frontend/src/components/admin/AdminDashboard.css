@@ -1,0 +1,113 @@
+admin-dashboard {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .dashboard-title {
+    color: #2196f3;
+    margin: 0;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+  }
+  
+  .welcome-message {
+    margin-right: 20px;
+  }
+  
+  .logout-btn {
+    margin-left: 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .create-btn {
+    margin-right: 10px;
+    background-color: #12c11b;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .dashboard-message {
+    background-color: #e3f2fd;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  
+  .users-section {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  
+  .user-table-container {
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .table-title {
+    color: #2196f3;
+    margin-bottom: 10px;
+  }
+  
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  }
+  
+  .user-table th, .user-table td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .user-table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+  
+  .action-btn {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .block-btn {
+    background-color: #ff9800;
+    color: white;
+  }
+  
+  .unblock-btn {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .block-btn:hover {
+    background-color: #f57c00;
+  }
+  
+  .unblock-btn:hover {
+    background-color: #45a049;
+  }
