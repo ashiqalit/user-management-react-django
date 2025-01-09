@@ -29,10 +29,11 @@ adminAxiosInstance.interceptors.response.use(
                 const response = await axios.post('http://localhost:8000/api/token/refresh/', {
                     refresh: refreshToken,
                 });
-                const {access} = response.data;
+                const {access, refresh} = response.data;
                 store.dispatch(refreshToken(response.data))
 
                 localStorage.setItem('adminAccessToken', access);
+                localStorage.setItem('adminRefreshToken', refresh);
                 axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
 
                 originalRequest.headers['Authorization'] = `Bearer ${access}`;
