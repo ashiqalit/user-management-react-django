@@ -30,11 +30,8 @@ const UserProfile = () => {
     if (!user) {
       navigate("/login");
     }
-  }, [user]);
-
-  useEffect(() => {
     fetchProfile();
-  }, []);
+  }, [user]);
 
   const fetchProfile = async () => {
     try {
@@ -57,15 +54,18 @@ const UserProfile = () => {
 
   const handleEdit = () => {
     setIsEditing(true);
+    setFirstNameError("");
+    setLastNameError("");
     setUsernameError("");
+    setEmailError("");
     setFileError("");
   };
 
-  const validateFirstName = (firstName) => {
-    if (!firstName.trim()) {
+  const validateFirstName = (first_name) => {
+    if (!first_name.trim()) {
       setFirstNameError("First Name is required");
       return false;
-    } else if (firstName.includes(".")) {
+    } else if (first_name.includes(".")) {
       setFirstNameError("First name cannot contain a dot");
       return false;
     }
@@ -73,11 +73,11 @@ const UserProfile = () => {
     return true;
   };
 
-  const validateLastName = (lastName) => {
-    if (!lastName.trim()) {
+  const validateLastName = (last_name) => {
+    if (!last_name.trim()) {
       setLastNameError("Last Name is required");
       return false;
-    } else if (lastName.includes(".")) {
+    } else if (last_name.includes(".")) {
       setLastNameError("Last name cannot contain a dot");
       return false;
     }
@@ -85,7 +85,7 @@ const UserProfile = () => {
     return true;
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = async (email) => {
     if (!email.trim()) {
       setEmailError("Email is required");
       return false;
@@ -93,8 +93,20 @@ const UserProfile = () => {
       setEmailError("Email is invalid");
       return false;
     }
-    setEmailError("");
-    return true;
+
+    try {
+      const response = await axiosInstance.get(`/admin/validate-email/?email=${email}/`)
+      if (response.data.exists) {
+        setEmailError("Email already in use");
+        return false
+      }
+      setEmailError("")
+      return true
+    } catch (error) {
+      console.error("Error checking email", error);
+      setEmailError("Error checking email")
+      return false
+    }
   };
 
   const validateUsername = (username) => {
@@ -134,10 +146,10 @@ const UserProfile = () => {
       return;
     }
     const formData = new FormData();
-    formData.append("firstName", newFirstName);
-    formData.append("lastName", newLastName);
-    formData.append("username", newUserName);
+    formData.append("first_name", newFirstName);
+    formData.append("last_name", newLastName);
     formData.append("email", newEmail);
+    formData.append("username", newUserName);
     if (newProfilePicture) {
       formData.append("profile_picture", newProfilePicture);
     }
@@ -193,7 +205,7 @@ const UserProfile = () => {
             )}
           </div>
           <h2 className="profile-name">
-            Welcom {user?.first_name} {user?.last_name}
+            Welcome {user?.first_name} {user?.last_name}
           </h2>
         </div>
         <div className="profile-body">
@@ -251,6 +263,11 @@ const UserProfile = () => {
               <button onClick={handleSave} className="save-btn">
                 Save
               </button>
+              {error && (
+                <div className="error">
+                  {error.response.data.error}
+                </div>
+              )}
             </div>
           ) : (
             <div className="profile-info">

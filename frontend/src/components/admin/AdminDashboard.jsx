@@ -38,7 +38,7 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Failed to fetch dashboard data", error);
       if (error.response && error.response.status === 401) {
-        navigate("/admin/login");
+        handleLogout();
       }
     }
   };
@@ -53,7 +53,7 @@ const AdminDashboard = () => {
 
   const toggleUserStatus = async (userId, currentStatus) => {
     try {
-      await adminAxiosInstance.post(`/admin/users/${userId}/toggle-status`);
+      await adminAxiosInstance.post(`/admin/users/${userId}/toggle-status/`);
       fetchDashboardData();
     } catch (error) {
       console.error("Failed to toggle user status", error);
@@ -61,38 +61,40 @@ const AdminDashboard = () => {
   };
 
   const UserTable = ({ users, tableTitle, isActive }) => {
-    <div className="user-table-container">
-      <h3 className="table-title">{tableTitle}</h3>
-      <table className="user-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
-              <td>
-                <button
-                  className={`action-btn ${
-                    isActive ? "block-btn" : "unblock-btn"
-                  }`}
-                  onClick={() => toggleUserStatus(user.id, user.is_active)}
-                >
-                  {isActive ? "Block" : "Unblock"}
-                </button>
-              </td>
+    return (
+      <div className="user-table-container">
+        <h3 className="table-title">{tableTitle}</h3>
+        <table className="user-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>;
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id}>
+                <td>{user.id}</td>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>
+                  <button
+                    className={`action-btn ${
+                      isActive ? "block-btn" : "unblock-btn"
+                    }`}
+                    onClick={() => toggleUserStatus(user.id, user.is_active)}
+                  >
+                    {isActive ? "Block" : "Unblock"}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
   };
 
   return (

@@ -16,35 +16,35 @@ adminAxiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-adminAxiosInstance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
+// adminAxiosInstance.interceptors.response.use(
+//     (response) => response,
+//     async (error) => {
+//         const originalRequest = error.config;
 
-        if (error.response.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
+//         if (error.response.status === 401 && !originalRequest._retry) {
+//             originalRequest._retry = true;
 
-            try {
-                const refreshToken = localStorage.getItem('refreshToken');
-                const response = await axios.post('http://localhost:8000/api/token/refresh/', {
-                    refresh: refreshToken,
-                });
-                const {access, refresh} = response.data;
-                store.dispatch(refreshToken(response.data))
+//             try {
+//                 const refreshToken = localStorage.getItem('refreshToken');
+//                 const response = await axios.post('http://localhost:8000/api/token/refresh/', {
+//                     refresh: refreshToken,
+//                 });
+//                 const {access, refresh} = response.data;
+//                 store.dispatch(refreshToken(response.data))
 
-                localStorage.setItem('adminAccessToken', access);
-                localStorage.setItem('adminRefreshToken', refresh);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
+//                 localStorage.setItem('adminAccessToken', access);
+//                 localStorage.setItem('adminRefreshToken', refresh);
+//                 axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
 
-                originalRequest.headers['Authorization'] = `Bearer ${access}`;
-                return adminAxiosInstance(originalRequest)
-            } catch (refreshError) {
-                store.dispatch(clearAuthData());
-                return Promise.reject(refreshError);
-            }
-        }
-        return Promise.reject(error);
-    }
-)
+//                 originalRequest.headers['Authorization'] = `Bearer ${access}`;
+//                 return adminAxiosInstance(originalRequest)
+//             } catch (refreshError) {
+//                 store.dispatch(clearAuthData());
+//                 return Promise.reject(refreshError);
+//             }
+//         }
+//         return Promise.reject(error);
+//     }
+// )
 
 export default adminAxiosInstance;

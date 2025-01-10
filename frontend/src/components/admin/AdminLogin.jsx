@@ -27,7 +27,7 @@ const AdminLogin = () => {
         email,
         password,
       });
-      localStorage.setItem("adminToken", response.data.admin_token);
+      localStorage.setItem("adminAccessToken", response.data.admin_token);
       localStorage.setItem("adminRefreshToken", response.data.refresh_token);
       localStorage.setItem("adminData", JSON.stringify(response.data));
 

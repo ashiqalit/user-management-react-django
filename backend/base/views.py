@@ -164,6 +164,16 @@ class UserProfileView(APIView):
 
     def put(self, request):
         profile = UserProfile.objects.get(user=request.user)
+        if "first_name" in request.data:
+            request.user.first_name = request.data["first_name"]
+            request.user.save()
+        if "last_name" in request.data:
+            request.user.last_name = request.data["last_name"]
+            request.user.save()
+        if "email" in request.data:
+            email = request.data["email"]
+            request.user.email = email
+            request.user.save()
         if "username" in request.data:
             request.user.username = request.data["username"]
             request.user.save()
@@ -171,6 +181,13 @@ class UserProfileView(APIView):
             profile.profile_picture = request.FILES["profile_picture"]
             profile.save()
         return Response({"message": "Profile updated successfully"})
+
+@api_view(['GET'])
+def check_email_exists(request):
+    email = request.query_params.get('email')
+    if User.objects.filter(email=email).exists():
+        return Response({"exists": True}, status=status.HTTP_200_OK)
+    return Response({"exists": False}, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
