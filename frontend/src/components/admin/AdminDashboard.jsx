@@ -2,29 +2,32 @@ import React, { useEffect, useState } from "react";
 import "./AdminDashboard.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { clearAuthData, setAuthData } from "../../redux/auth/authSlice";
+import { clearAuthAdminData, setAuthAdminData } from "../../redux/auth/authSlice";
 import adminAxiosInstance from "../../adminaxiosconfig";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth.user);
+  const user = useSelector((state) => state.auth.adminUser);
   const [activeUsers, setActiveUsers] = useState([]);
   const [inactiveUsers, setInactiveUsers] = useState([]);
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    if (!user) {
-      const storedAdminData = localStorage.getItem("adminData");
-      if (storedAdminData) {
-        dispatch(setAuthData(JSON.parse(storedAdminData)));
-      } else {
-        navigate("/admin/login");
-      }
-    }
-    fetchDashboardData();
-  }, [user, dispatch, navigate]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     const storedAdminData = localStorage.getItem("adminData");
+  //     if (storedAdminData) {
+  //       dispatch(setAuthAdminData(JSON.parse(storedAdminData)));
+  //     } else {
+  //       navigate("/admin/login");
+  //     }
+  //   }
+  //   fetchDashboardData();
+  // }, [user, dispatch, navigate]);
 
+  useEffect(() => {
+    fetchDashboardData();
+  })
   const handleCreateUser = () => {
     navigate("/admin/create-user");
   };
@@ -44,10 +47,15 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = () => {
-    dispatch(clearAuthData());
-    localStorage.removeItem("adminToken");
+    dispatch(clearAuthAdminData());
+    // localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminAccessToken");
+    // localStorage.removeItem("accessToken");
+    // localStorage.removeItem("user");
     localStorage.removeItem("adminRefreshToken");
+    // localStorage.removeItem("refreshToken");
     localStorage.removeItem("adminData");
+    localStorage.removeItem("adminUser");
     navigate("/admin/login");
   };
 

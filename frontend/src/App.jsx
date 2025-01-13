@@ -8,6 +8,8 @@ import AdminDashboard from "./components/admin/AdminDashboard";
 import CreateUserPage from "./components/admin/CreateUserPage";
 import UserProfile from "./components/home/UserProfile";
 import DefaultAdmin from "./components/defaultadmin/defaultAdmin";
+import AuthWrapper from "./components/AuthWrapper";
+import AuthWrapperAdmin from "./components/AuthWrapperAdmin";
 
 function App() {
 
@@ -18,11 +20,19 @@ function App() {
           <Route path="/" element={<Login/>} />
           <Route path="/login" element={<Login/>} />
           <Route path="/signup" element={<Signup/>} />
-          <Route path="/home" element={<Home/>} />
+          
+          <Route element={<AuthWrapper/>}>
+            <Route path="/home" element={<Home/>} />
+            <Route path="/user-profile" element={<UserProfile/>} />
+          </Route>
+          
           <Route path="/admin/login" element={<AdminLogin/>} />
-          <Route path="/admin/dashboard" element={<AdminDashboard/>} />
-          <Route path="/admin/create-user" element={<CreateUserPage/>} />
-          <Route path="/user-profile" element={<UserProfile/>} />
+
+          <Route element={<AuthWrapperAdmin/>}>
+            <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+            <Route path="/admin/create-user" element={<CreateUserPage/>} />
+          </Route>
+          
           <Route path="/defaultadmin" element={<DefaultAdmin/>} />
         </Routes>
       </BrowserRouter>

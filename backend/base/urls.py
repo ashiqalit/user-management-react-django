@@ -7,7 +7,6 @@ from .views import (
     AdminDashboardView,
     UserProfileView,
     toggle_user_status,
-    check_email_exists,
     admin_create_user
 )
 
@@ -30,6 +29,5 @@ urlpatterns = [
         toggle_user_status,
         name="toggle_user_status",
     ),
-    path('admin/validate-email/<str:email>', check_email_exists, name='check_email_exists'),
     path('admin/create-user/', admin_create_user, name='admin_create_user'),
 ]

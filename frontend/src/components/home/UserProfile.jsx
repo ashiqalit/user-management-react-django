@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../axiosconfig";
-import { clearAuthData } from "../../redux/auth/authSlice";
+import { clearAuthData, setAuthData } from "../../redux/auth/authSlice";
 import "./UserProfile.css";
 
 const UserProfile = () => {
@@ -27,9 +27,15 @@ const UserProfile = () => {
   const [fileError, setFileError] = useState("");
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login");
-    }
+    // if (!user) {
+    //   const storedUserData = localStorage.getItem("user");
+    //   if (storedUserData) {
+    //     const parsedUserData = JSON.parse(storedUserData)
+    //     dispatch(setAuthData({user: parsedUserData}))
+    //   }else{
+    //     handleLogout();
+    //   } 
+    // }
     fetchProfile();
   }, [user]);
 
@@ -92,20 +98,6 @@ const UserProfile = () => {
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       setEmailError("Email is invalid");
       return false;
-    }
-
-    try {
-      const response = await axiosInstance.get(`/admin/validate-email/?email=${email}/`)
-      if (response.data.exists) {
-        setEmailError("Email already in use");
-        return false
-      }
-      setEmailError("")
-      return true
-    } catch (error) {
-      console.error("Error checking email", error);
-      setEmailError("Error checking email")
-      return false
     }
   };
 
@@ -205,7 +197,7 @@ const UserProfile = () => {
             )}
           </div>
           <h2 className="profile-name">
-            Welcome {user?.first_name} {user?.last_name}
+            Welcome {profile?.first_name} {profile?.last_name}
           </h2>
         </div>
         <div className="profile-body">

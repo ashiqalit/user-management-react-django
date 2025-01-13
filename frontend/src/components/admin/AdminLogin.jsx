@@ -3,7 +3,7 @@ import "./AdminLogin.css";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import adminAxiosInstance from "../../adminaxiosconfig";
-import { setAuthData } from "../../redux/auth/authSlice";
+import { clearAuthAdminData, setAuthAdminData } from "../../redux/auth/authSlice";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -12,30 +12,42 @@ const AdminLogin = () => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
-  const user = useSelector((state) => state.auth.user);
+  const adminUser = useSelector((state) => state.auth.user);
 
   useEffect(() => {
-    if (user && user.is_superuser) {
+    if (adminUser && adminUser.is_superuser) {
       navigate("/admin/dashboard");
     }
-  }, [user, navigate]);
+  }, [adminUser, navigate]);
 
   const handleAdminLogin = async (e) => {
     e.preventDefault();
     try {
+      localStorage.removeItem("adminUser"); 
+      localStorage.removeItem("adminAccessToken"); 
+      localStorage.removeItem("adminRefreshToken"); 
+      localStorage.removeItem("adminData"); 
+      dispatch(clearAuthAdminData());
       const response = await adminAxiosInstance.post("/admin/token/", {
         email,
         password,
       });
-      localStorage.setItem("adminAccessToken", response.data.admin_token);
-      localStorage.setItem("adminRefreshToken", response.data.refresh_token);
+      const {user, admin_token, refresh_token } = response.data
+      localStorage.setItem("adminUser", JSON.stringify(response.data.user));
+      localStorage.setItem("adminAccessToken", admin_token);
+      localStorage.setItem("adminRefreshToken", refresh_token);
       localStorage.setItem("adminData", JSON.stringify(response.data));
-
-      dispatch(setAuthData(response.data));
+      // console.log(response.data);
+      
+      dispatch(setAuthAdminData({
+        adminUser: user,
+        adminAccessToken: admin_token,
+        adminRefreshToken: refresh_token
+      }));
       navigate("/admin/dashboard/", { replace: true });
     } catch (error) {
       console.error("Admin login failed", error);
-      setError(error);
+      setError(error.response?.data?.detail || "Login failed, check your credentials." );
     }
   };
   return (

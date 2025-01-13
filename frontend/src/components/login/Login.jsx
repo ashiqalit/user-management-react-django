@@ -3,7 +3,7 @@ import "./Login.css";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import axiosInstance from "../../axiosconfig";
-import { setAuthData } from "../../redux/auth/authSlice";
+import { clearAuthData, setAuthData, updateToken } from "../../redux/auth/authSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -23,6 +23,11 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      localStorage.removeItem("user"); 
+      localStorage.removeItem("accessToken"); 
+      localStorage.removeItem("refreshToken"); 
+      dispatch(clearAuthData());
+
       const response = await axiosInstance.post("/login/", { email, password });
       const { user, access_token, refresh_token } = response.data;
       // console.log(access_token);
@@ -30,7 +35,11 @@ const Login = () => {
       localStorage.setItem("user", JSON.stringify(user));
       localStorage.setItem("accessToken", access_token);
       localStorage.setItem("refreshToken", refresh_token);
-      dispatch(setAuthData(response.data));
+      dispatch(setAuthData({
+        user:user,
+        accessToken:access_token,
+        refreshToken:refresh_token
+      }));
       navigate("/home", { replace: true });
     } catch (error) {
       console.error("Login failed", error);

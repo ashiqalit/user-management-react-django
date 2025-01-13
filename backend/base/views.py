@@ -182,13 +182,6 @@ class UserProfileView(APIView):
             profile.save()
         return Response({"message": "Profile updated successfully"})
 
-@api_view(['GET'])
-def check_email_exists(request):
-    email = request.query_params.get('email')
-    if User.objects.filter(email=email).exists():
-        return Response({"exists": True}, status=status.HTTP_200_OK)
-    return Response({"exists": False}, status=status.HTTP_200_OK)
-
 
 @api_view(["POST"])
 @permission_classes([IsAdminUser])
