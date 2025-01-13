@@ -6,6 +6,7 @@ from .views import (
     AdminTokenObtainView,
     AdminDashboardView,
     UserProfileView,
+    AdminUserProfileView,
     toggle_user_status,
     admin_create_user
 )
@@ -24,6 +25,7 @@ urlpatterns = [
     path("admin/token/", AdminTokenObtainView.as_view(), name="admin_token"),
     path("admin/dashboard/", AdminDashboardView.as_view(), name="admin_dashboard"),
     path("user-profile/", UserProfileView.as_view(), name="user_profile"),
+    path("user-profile-admin/<int:user_id>/", AdminUserProfileView.as_view(), name="user_profile"),
     path(
         "admin/users/<int:user_id>/toggle-status/",
         toggle_user_status,

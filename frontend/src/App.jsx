@@ -10,6 +10,7 @@ import UserProfile from "./components/home/UserProfile";
 import DefaultAdmin from "./components/defaultadmin/defaultAdmin";
 import AuthWrapper from "./components/AuthWrapper";
 import AuthWrapperAdmin from "./components/AuthWrapperAdmin";
+import UserAdminProfile from "./components/admin/UserAdminProfile";
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
 
           <Route element={<AuthWrapperAdmin/>}>
             <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+            <Route path="/user-profile-admin/:user_id" element={<UserAdminProfile/>} />
             <Route path="/admin/create-user" element={<CreateUserPage/>} />
           </Route>
           

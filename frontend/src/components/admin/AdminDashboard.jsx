@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./AdminDashboard.css";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { clearAuthAdminData, setAuthAdminData } from "../../redux/auth/authSlice";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  clearAuthAdminData,
+  setAuthAdminData,
+} from "../../redux/auth/authSlice";
 import adminAxiosInstance from "../../adminaxiosconfig";
 
 const AdminDashboard = () => {
@@ -27,7 +30,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
-  })
+  });
   const handleCreateUser = () => {
     navigate("/admin/create-user");
   };
@@ -56,6 +59,7 @@ const AdminDashboard = () => {
     // localStorage.removeItem("refreshToken");
     localStorage.removeItem("adminData");
     localStorage.removeItem("adminUser");
+    dispatch(clearAuthAdminData());
     navigate("/admin/login");
   };
 
@@ -66,6 +70,10 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Failed to toggle user status", error);
     }
+  };
+
+  const openUserProfile = async (userId) => {
+    navigate(`/user-profile-admin/${userId}`);
   };
 
   const UserTable = ({ users, tableTitle, isActive }) => {
@@ -95,6 +103,14 @@ const AdminDashboard = () => {
                     onClick={() => toggleUserStatus(user.id, user.is_active)}
                   >
                     {isActive ? "Block" : "Unblock"}
+                  </button>
+                  <button
+                    className="action-btn"
+                    onClick={() => {
+                      openUserProfile(user.id);
+                    }}
+                  >
+                    Edit
                   </button>
                 </td>
               </tr>

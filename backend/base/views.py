@@ -59,7 +59,7 @@ class LoginView(APIView):
                             "username": user.username,
                             "email": user.email,
                         },
-                        "access_token": str(token_response.access_token ),
+                        "access_token": str(token_response.access_token),
                         "refresh_token": str(token_response),
                     }
                 )
@@ -181,6 +181,111 @@ class UserProfileView(APIView):
             profile.profile_picture = request.FILES["profile_picture"]
             profile.save()
         return Response({"message": "Profile updated successfully"})
+
+
+class AdminUserProfileView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    def get(self, request, user_id=None):
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        profile = UserProfile.objects.get(user=user)
+        return Response(
+            {
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "username": user.username,
+                "profile_picture": (
+                    request.build_absolute_uri(profile.profile_picture.url)
+                    if profile.profile_picture
+                    else None
+                ),
+            }
+        )
+
+    def put(self, request, user_id=None):
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        profile = UserProfile.objects.get(user=user)
+        data = request.data
+
+        if "first_name" in data:
+            user.first_name = data["first_name"]
+        if "last_name" in data:
+            user.last_name = data["last_name"]
+        if "email" in data:
+            email = data["email"]
+            user.email = email
+        if "username" in data:
+            user.username = data["username"]
+
+        user.save()
+
+        if "profile_picture" in request.FILES:
+            profile.profile_picture = request.FILES["profile_picture"]
+            profile.save()
+        return Response({"message": "Profile updated successfully"})
+
+
+# class UserProfileView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request, user_id=None):
+#         if request.user.is_superadmin and user_id:
+#             user = User.objects.get(id=user_id)
+#         else:
+#             user = request.user
+#         profile = UserProfile.objects.get(user=user)
+#         return Response(
+#             {
+#                 "first_name": user.first_name,
+#                 "last_name": user.last_name,
+#                 "email": user.email,
+#                 "username": user.username,
+#                 "profile_picture": (
+#                     request.build_absolute_uri(profile.profile_picture.url)
+#                     if profile.profile_picture
+#                     else None
+#                 ),
+#             }
+#         )
+
+#     def put(self, request, user_id=None):
+#         if request.user.is_superadmin and user_id:
+#             user = User.objects.get(id=user_id)
+#         else:
+#             user = request.user
+#         profile = UserProfile.objects.get(user=user)
+#         if "first_name" in request.data:
+#             user.first_name = request.data["first_name"]
+#             user.save()
+#         if "last_name" in request.data:
+#             user.last_name = request.data["last_name"]
+#             user.save()
+#         if "email" in request.data:
+#             email = request.data["email"]
+#             user.email = email
+#             user.save()
+#         if "username" in request.data:
+#             user.username = request.data["username"]
+#             user.save()
+#         if "profile_picture" in request.FILES:
+#             profile.profile_picture = request.FILES["profile_picture"]
+#             profile.save()
+#         return Response({"message": "Profile updated successfully"})
 
 
 @api_view(["POST"])
